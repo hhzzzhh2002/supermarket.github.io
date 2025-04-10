@@ -103,3 +103,9 @@ button:hover {
     white-space: pre-wrap;
     line-height: 1.8;
 }
+/* 添加canvas样式 */
+#modelCanvas {
+    display: block;
+    margin: 0 auto 30px auto; /* 与下方表单保持间距 */
+    background: transparent;
+}
