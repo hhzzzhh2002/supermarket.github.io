@@ -81,7 +81,7 @@
         };
     </script>
 
-    <!-- 3D模型渲染脚本 -->
+    <!-- 3D模型渲染脚本（调整后的部分） -->
     <script>
         // Three.js 初始化
         const scene = new THREE.Scene();
@@ -96,13 +96,13 @@
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
 
-        // 加载两个模型
+        // 加载两个模型（调整路径为 GitHub Pages 兼容）
         const loader = new THREE.GLTFLoader();
         let modelA, modelB;
 
-        // 模型A：保持你喜欢的运动方式，置顶
+        // 模型A：调整为绝对路径
         loader.load(
-            'static/modelA.glb', // 第一个模型路径
+            '/supermarket.github.io/static/modelA.glb', // GitHub Pages 上的绝对路径
             (gltf) => {
                 modelA = gltf.scene;
                 modelA.position.set(-2, 0, 4); // 左侧靠前（Z=4靠近相机）
@@ -113,9 +113,9 @@
             (error) => console.error('Model A error:', error)
         );
 
-        // 模型B：类似modelA，置顶
+        // 模型B：调整为绝对路径
         loader.load(
-            'static/modelB.glb', // 第二个模型路径
+            '/supermarket.github.io/static/modelB.glb', // GitHub Pages 上的绝对路径
             (gltf) => {
                 modelB = gltf.scene;
                 modelB.position.set(2, 0, 4); // 右侧靠前（Z=4靠近相机）
