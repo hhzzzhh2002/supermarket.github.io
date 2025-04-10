@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Huang Studio</title>
     <link rel="stylesheet" href="static/style.css">
+    <!-- 引入Three.js和GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>你就是商品</h1>
+        <!-- 添加canvas用于渲染3D模型 -->
+        <canvas id="modelCanvas" style="width: 100%; height: 400px;"></canvas>
         <form id="apiForm">
             <label>选择助手</label>
             <div class="radio-group">
@@ -22,6 +27,7 @@
         <div id="response"></div>
     </div>
 
+    <!-- 原有的API调用脚本 -->
     <script>
         const API_KEY = "sk-685683bf7221461c98c0f6888bd5f0b3"; // 你的 API Key
         const BASE_URL = "https://api.deepseek.com/v1/chat/completions";
@@ -71,6 +77,56 @@
                 responseDiv.innerHTML = `错误: ${error.message}`;
             }
         };
+    </script>
+
+    <!-- 3D模型渲染脚本 -->
+    <script>
+        // Three.js 初始化
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / 400, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('modelCanvas'), alpha: true });
+        renderer.setSize(window.innerWidth * 0.8, 400); // 设置canvas初始大小
+
+        // 添加光源
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(0, 1, 1);
+        scene.add(directionalLight);
+
+        // 加载模型
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            'static/model.glb', // 模型路径，假设文件在static文件夹中
+            (gltf) => {
+                const model = gltf.scene;
+                scene.add(model);
+                model.position.set(0, 0, 0); // 模型位置
+                model.scale.set(1, 1, 1);   // 模型缩放
+            },
+            (xhr) => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
+            (error) => console.error('An error occurred:', error)
+        );
+
+        // 设置相机位置
+        camera.position.z = 5;
+
+        // 动画循环（旋转模型）
+        function animate() {
+            requestAnimationFrame(animate);
+            if (scene.children.length > 2) { // 确保模型已加载
+                scene.children[2].rotation.y += 0.01; // 旋转速度
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 自适应窗口大小
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / 400;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth * 0.8, 400);
+        });
     </script>
 </body>
 </html>
