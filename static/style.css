@@ -1,5 +1,5 @@
 body {
-    background-image: url('/static/grassland1.png');
+    background-image: url('grassland1.png'); /* 相对路径，假设图片和 CSS 文件在同一目录 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
