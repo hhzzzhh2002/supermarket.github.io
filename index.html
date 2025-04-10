@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huang Studio</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>你就是商品</h1>
+        <form id="apiForm">
+            <label>选择助手</label>
+            <div class="radio-group">
+                <label><input type="radio" name="model" value="deepseek-chat" checked> 推销员A</label>
+                <label><input type="radio" name="model" value="deepseek-reasoner"> 推销员B</label>
+            </div>
+            <label>输入你的问题</label>
+            <textarea name="prompt" placeholder="请输入你的问题..."></textarea>
+            <button type="submit">提交</button>
+        </form>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const API_KEY = "sk-685683bf7221461c98c0f6888bd5f0b3"; // 你的 API Key
+        const BASE_URL = "https://api.deepseek.com/v1/chat/completions";
+
+        document.getElementById('apiForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = new FormData(this);
+            const model = form.get('model');
+            const prompt = form.get('prompt');
+            const responseDiv = document.getElementById('response');
+
+            if (!prompt) {
+                responseDiv.innerHTML = '错误: 问题不能为空';
+                return;
+            }
+
+            responseDiv.innerHTML = '处理中...';
+
+            try {
+                const res = await fetch(BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: 'system', content: '你是一个有用的助手。' },
+                            { role: 'user', content: prompt }
+                        ],
+                        max_tokens: 4096,
+                        stream: false
+                    })
+                });
+
+                const data = await res.json();
+                if (data.choices && data.choices.length > 0) {
+                    responseDiv.innerHTML = `
+                        <strong>使用的模型:</strong> ${model === 'deepseek-chat' ? '推销员A' : '推销员B'}<br>
+                        <strong>回答:</strong> ${data.choices[0].message.content}
+                    `;
+                } else {
+                    responseDiv.innerHTML = '错误: API 返回数据异常';
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `错误: ${error.message}`;
+            }
+        };
+    </script>
+</body>
+</html>

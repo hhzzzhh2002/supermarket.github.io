@@ -1,0 +1,105 @@
+body {
+    background-image: url('/static/grassland1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #ffffff;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    max-width: 800px;
+    width: 100%;
+    margin: 50px 0;
+    padding: 40px;
+    background-color: rgba(26, 26, 26, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+h1 {
+    font-size: 2.5em;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 300;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+label {
+    font-size: 1.2em;
+    color: #dddddd;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.radio-group {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+input[type="radio"] {
+    accent-color: #ffffff;
+    margin-right: 8px;
+}
+.radio-group label {
+    font-size: 1em;
+    text-transform: uppercase;
+    color: #cccccc;
+    transition: color 0.3s;
+}
+.radio-group label:hover {
+    color: #ffffff;
+}
+textarea {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 15px;
+    font-size: 1em;
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+    height: 150px;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+textarea:focus {
+    border-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.15);
+    outline: none;
+}
+button {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    padding: 12px 30px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    width: fit-content;
+    align-self: center;
+}
+button:hover {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+#response {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 2px solid #ffffff;
+    font-size: 1.1em;
+    white-space: pre-wrap;
+    line-height: 1.8;
+}
