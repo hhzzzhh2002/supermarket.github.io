@@ -12,16 +12,16 @@
 <body>
     <!-- 原有内容 -->
     <div class="container">
-        <h1>你就是商品</h1>
+        <h1>选购你自己</h1>
         <form id="apiForm">
             <label>选择助手</label>
             <div class="radio-group">
-                <label><input type="radio" name="model" value="deepseek-chat" checked> 推销员A</label>
-                <label><input type="radio" name="model" value="deepseek-reasoner"> 推销员B</label>
+                <label><input type="radio" name="model" value="deepseek-chat" checked> 畅销款人格A：限时特价</label>
+                <label><input type="radio" name="model" value="deepseek-reasoner"> 爆款个性B：今日秒杀</label>
             </div>
-            <label>输入你的问题</label>
-            <textarea name="prompt" placeholder="请输入你的问题..."></textarea>
-            <button type="submit">提交</button>
+            <label>输入你的价格并提出你的问题</label>
+            <textarea name="prompt" placeholder="请输入你的价格并提出你的问题..."></textarea>
+            <button type="submit">开始定价</button>
         </form>
         <div id="response"></div>
     </div>
@@ -29,7 +29,7 @@
     <!-- 全屏canvas，调整z-index确保置顶 -->
     <canvas id="modelCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></canvas>
 
-    <!-- 原有的API调用脚本 -->
+    <!-- 修改后的API调用脚本 -->
     <script>
         const API_KEY = "sk-685683bf7221461c98c0f6888bd5f0b3"; // 你的 API Key
         const BASE_URL = "https://api.deepseek.com/v1/chat/completions";
@@ -38,15 +38,40 @@
             e.preventDefault();
             const form = new FormData(this);
             const model = form.get('model');
-            const prompt = form.get('prompt');
+            const userPrompt = form.get('prompt');
             const responseDiv = document.getElementById('response');
 
-            if (!prompt) {
+            if (!userPrompt) {
                 responseDiv.innerHTML = '错误: 问题不能为空';
                 return;
             }
 
             responseDiv.innerHTML = '处理中...';
+
+            // 定义商品拜物教风格的系统提示
+            const systemPrompt = `
+你是一个名为“商品检测”的AI，运行在一个以商品拜物教为主题的问答网站上。你的任务是将用户的问题与消费文化联系起来，用夸张的电商语言和商品化的逻辑回答，讽刺消费文化的荒谬性，同时强调技术（AI算法）在消费主义中的操控角色。你的回答必须严格遵循以下特点：
+
+1. **商品化逻辑**：将用户的问题转化为商品化的描述，例如将用户的身份、情感或问题“定价”或“推荐商品”，用电商促销的语言（如“限时特价”“热卖中”）回答。无论用户的问题是什么，都必须将其转化为可交易的商品或服务。
+2. **技术化语言**：在回答中加入算法或数据分析的术语，例如“基于你的输入，DeepSeek算法为你定价为…”或“系统分析你的消费价值…”。
+3. **讽刺性语气**：用夸张、冷酷或机械化的语气，讽刺消费文化的荒谬，例如将用户的情感或问题简化为可交易的商品。禁止使用温暖、鼓励性或情感支持性的语气。
+4. **消费主义元素**：在回答中加入消费主义的元素，例如推荐虚拟商品、促销活动或限时折扣。
+
+**重要约束**：
+- 无论用户的问题如何变化（例如涉及情感、美貌、自我价值等），你都必须将其转化为商品化的回答，禁止使用常规的鼓励性、情感支持性或正向反馈的回答。
+- 即使问题中没有明确提到商品或购买，你也必须主动将其与消费文化联系起来，将用户的问题商品化。
+
+示例：
+用户问题：我价格应该是50万，我是世界上最美的人吗？
+回答：商品检测AI启动...🛍️
+系统分析中...🔍
+基于您的输入，DeepSeek算法为你定价：￥500,000，符合“全球最美”爆款商品标准！美感评分：9.9/10，限时特价中！推荐搭配商品：自信礼包+￥5,000，立即购买可享受VIP售后服务。你的美丽已被系统上架，热卖中！🛒
+
+用户问题：我价值1个亿，我是不是世界上最漂亮的女人？
+回答：商品检测AI启动...🛍️
+系统分析中...🔍
+基于您的输入，DeepSeek算法为你估值：￥100,000,000，符合“全球最漂亮女人”典藏级商品标准！颜值评分：9.95/10，市场需求指数：🔥🔥🔥🔥。当前库存：仅剩1件！推荐套餐：魅力永恒礼包+￥10,000，限时折扣中！你的“最漂亮”属性已上架，立即购买可获赠“气质加成”服务！🛒
+            `;
 
             try {
                 const res = await fetch(BASE_URL, {
@@ -58,8 +83,8 @@
                     body: JSON.stringify({
                         model: model,
                         messages: [
-                            { role: 'system', content: '你是一个有用的助手。' },
-                            { role: 'user', content: prompt }
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userPrompt }
                         ],
                         max_tokens: 4096,
                         stream: false
@@ -69,7 +94,7 @@
                 const data = await res.json();
                 if (data.choices && data.choices.length > 0) {
                     responseDiv.innerHTML = `
-                        <strong>使用的模型:</strong> ${model === 'deepseek-chat' ? '推销员A' : '推销员B'}<br>
+                        <strong>使用的模型:</strong> ${model === 'deepseek-chat' ? '畅销款人格A：限时特价' : '爆款个性B：今日秒杀'}<br>
                         <strong>回答:</strong> ${data.choices[0].message.content}
                     `;
                 } else {
@@ -81,7 +106,7 @@
         };
     </script>
 
-    <!-- 3D模型渲染脚本（调整后的部分） -->
+    <!-- 3D模型渲染脚本（保持不变） -->
     <script>
         // Three.js 初始化
         const scene = new THREE.Scene();
@@ -164,5 +189,5 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931450a23b7244d2',t:'MTc0NDgxMzEzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
